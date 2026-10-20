@@ -94,13 +94,22 @@ class ThemeEngine:
 
         self.theme_centroids = np.array(centroids)
 
-    def assign_theme(self, text: str, min_similarity: float = 0.12) -> tuple[str, str, float]:
+    def assign_theme(self, text: str, min_similarity: float = 0.08) -> tuple[str, str, float]:
         """
-        Assigns text to closest theme centroid using cosine similarity.
+        Assigns text to closest theme centroid using cosine similarity and keyword heuristics.
         Returns: (theme_label, keywords, similarity_score)
         """
         if not text or not text.strip():
             return "General Feedback", "feedback, service, opinion", 0.0
+
+        text_lower = text.lower()
+        # Direct keyword priority check
+        for idx, t_def in enumerate(DEFAULT_THEME_DEFINITIONS):
+            kws = [k.strip() for k in t_def["keywords"].split(",") if k.strip()]
+            for kw in kws:
+                if kw in text_lower:
+                    label = t_def["label"]
+                    return label, self.theme_keywords.get(label, ""), 0.85
 
         vec = self.vectorizer.transform([text]).toarray()
         norm = np.linalg.norm(vec)

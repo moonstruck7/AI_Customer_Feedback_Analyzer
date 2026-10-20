@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Customer Feedback Analyzer - Lightweight multi-source decision support system for SMBs with sentiment analysis, theme clustering, and anomaly alerts.">
+    <title>AI Customer Feedback Analyzer | SMB Decision Support System</title>
+    <!-- Modern Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="theme-dark">
+    <!-- App Container -->
+    <div class="app-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M12 14c-1.5 0-2.5-.8-3-1.5"></path></svg>
+                </div>
+                <div class="brand-text">
+                    <h1>Sentiment<span class="gradient-text">SMB</span></h1>
+                    <span class="badge-sub">AI Feedback Engine</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>Analytics Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="urgent-feed">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span>Urgent Action Queue</span>
+                    <span class="pill-badge pill-danger" id="nav-urgent-count">0</span>
+                </button>
+                <button class="nav-item" data-tab="live-tester">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <span>Live NLP Tester</span>
+                </button>
+                <button class="nav-item" data-tab="ingest-data">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <span>Ingest & Sources</span>
+                </button>
+                <button class="nav-item" data-tab="alerts-tab">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span>Alerts & Anomalies</span>
+                    <span class="pill-badge pill-warning" id="nav-alert-count">0</span>
+                </button>
+                <button class="nav-item admin-only-tab" data-tab="admin-tab">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>System Administration</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="project-tag">
+                    <span class="tag-title">MSBTE Diploma Project</span>
+                    <span class="tag-meta">Computer Engineering • Year 3</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-wrapper">
+            
+            <!-- Top Navbar -->
+            <header class="topbar">
+                <div class="page-title-box">
+                    <h2 id="page-title">Executive CX Dashboard</h2>
+                    <p class="subtitle">AI-driven multi-source feedback insights & anomaly detection</p>
+                </div>
+
+                <div class="topbar-actions">
+                    <!-- Live Pipeline Indicator -->
+                    <div class="status-indicator">
+                        <span class="pulse-dot"></span>
+                        <span class="status-label">NLP Cascade Active</span>
+                    </div>
+
+                    <!-- Role Selector (Section 5.1 Table 2) -->
+                    <div class="role-selector-box">
+                        <span class="role-label">Active Role:</span>
+                        <select id="role-select" class="role-dropdown">
+                            <option value="SMB Owner" selected>👔 SMB Owner (Aarav Sharma)</option>
+                            <option value="Support Manager">🎧 Support Manager (Pooja Verma)</option>
+                            <option value="System Admin">⚙️ System Admin (Kiran Patil)</option>
+                        </select>
+                    </div>
+
+                    <!-- Export Report Button -->
+                    <button id="btn-export-csv" class="btn btn-secondary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>Export CSV</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- TAB 1: EXECUTIVE ANALYTICS DASHBOARD -->
+            <section id="tab-dashboard" class="tab-pane active">
+                
+                <!-- Quick Filter Bar -->
+                <div class="filter-bar glass-panel">
+                    <div class="filter-group">
+                        <label for="filter-source">Channel Source:</label>
+                        <select id="filter-source" class="input-select">
+                            <option value="">All Channels (Multi-Source View)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-time">Time Horizon:</label>
+                        <select id="filter-time" class="input-select">
+                            <option value="7">Last 7 Days</option>
+                            <option value="14">Last 14 Days</option>
+                            <option value="30" selected>Last 30 Days (Rolling Baseline)</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="btn-refresh" class="btn btn-sm btn-outline">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            <span>Refresh Data</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Grid -->
+                <div class="kpi-grid">
+                    
+                    <!-- NSS Card (Primary Hero Metric) -->
+                    <div class="card kpi-card hero-nss glass-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Net Sentiment Score (NSS)</span>
+                            <span class="info-tooltip" title="NSS = ((Positive - Negative) / Total) × 100">Formula [7.1]</span>
+                        </div>
+                        <div class="nss-value-row">
+                            <span class="nss-number" id="metric-nss">0.0</span>
+                            <span class="nss-unit">%</span>
+                        </div>
+                        <div class="nss-gauge-bar">
+                            <div class="nss-fill" id="nss-fill-bar" style="width: 50%;"></div>
+                        </div>
+                        <div class="nss-scale-labels">
+                            <span>-100 (Critical)</span>
+                            <span>0 (Neutral)</span>
+                            <span>+100 (Optimal)</span>
+                        </div>
+                    </div>
+
+                    <!-- Total Volume -->
+                    <div class="card kpi-card glass-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Total Feedback Volume</span>
+                            <div class="icon-chip bg-primary-soft">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="kpi-main-val" id="metric-total">0</div>
+                        <div class="kpi-meta">Ingested across 5 channels</div>
+                    </div>
+
+                    <!-- Sentiment Breakdown -->
+                    <div class="card kpi-card glass-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Sentiment Distribution</span>
+                            <div class="icon-chip bg-success-soft">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                            </div>
+                        </div>
+                        <div class="sentiment-split-bar">
+                            <div class="split-segment seg-pos" id="split-pos" style="width: 33%;"></div>
+                            <div class="split-segment seg-neu" id="split-neu" style="width: 33%;"></div>
+                            <div class="split-segment seg-neg" id="split-neg" style="width: 34%;"></div>
+                        </div>
+                        <div class="sentiment-legend">
+                            <span class="leg-item"><i class="dot dot-pos"></i> Pos: <b id="pct-pos">0%</b></span>
+                            <span class="leg-item"><i class="dot dot-neu"></i> Neu: <b id="pct-neu">0%</b></span>
+                            <span class="leg-item"><i class="dot dot-neg"></i> Neg: <b id="pct-neg">0%</b></span>
+                        </div>
+                    </div>
+
+                    <!-- Star Rating & Urgent Complaints -->
+                    <div class="card kpi-card glass-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Critical & Urgent Items</span>
+                            <div class="icon-chip bg-danger-soft">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            </div>
+                        </div>
+                        <div class="kpi-dual-row">
+                            <div>
+                                <span class="dual-val text-danger" id="metric-urgent">0</span>
+                                <span class="dual-label">Urgent Issues</span>
+                            </div>
+                            <div class="divider-v"></div>
+                            <div>
+                                <span class="dual-val text-warning" id="metric-rating">0.0★</span>
+                                <span class="dual-label">Avg Rating</span>
+                            </div>
+                        </div>
+                        <div class="kpi-meta text-danger-sub" id="metric-alerts-meta">0 active anomalies detected</div>
+                    </div>
+
+                </div>
+
+                <!-- Charts & Breakdown Section -->
+                <div class="dashboard-grid-2">
+                    
+                    <!-- Trend Chart Card -->
+                    <div class="card chart-card glass-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Sentiment & Net Score Trends Over Time</h3>
+                                <p class="card-desc">Daily progression of positive, neutral, negative feedback volume and calculated NSS</p>
+                            </div>
+                            <div class="chart-badges">
+                                <span class="badge badge-pos">● Positive</span>
+                                <span class="badge badge-neu">● Neutral</span>
+                                <span class="badge badge-neg">● Negative</span>
+                                <span class="badge badge-accent">― NSS Line</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="trend-chart-container" class="trend-canvas-wrap">
+                                <canvas id="trendCanvas" height="280"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Channel Volume Breakdown -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Volume by Channel</h3>
+                                <p class="card-desc">Comparison across external platforms & ingestion pipelines</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="channels-list" class="channels-progress-list">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Themes & Emerging Topic Clusters -->
+                <div class="card glass-card mt-4">
+                    <div class="card-header">
+                        <div>
+                            <h3>Discovered Topic Clusters & Themes</h3>
+                            <p class="card-desc">Automatic grouping via Sentence Embeddings, Cosine Similarity & TF-IDF keywords (Section 7.1)</p>
+                        </div>
+                        <span class="badge badge-outline">5 Automated Clusters</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="themes-grid" class="themes-grid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 2: URGENT COMPLAINT ACTION QUEUE -->
+            <section id="tab-urgent-feed" class="tab-pane">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Urgent Action Queue (Support Manager View)</h3>
+                            <p class="card-desc">Prioritised high-risk complaints containing critical keywords or intense negative sentiment (S ≤ -0.70)</p>
+                        </div>
+                        <div class="queue-filters">
+                            <select id="urgent-status-filter" class="input-select input-sm">
+                                <option value="">All Statuses</option>
+                                <option value="new" selected>New / Unassigned</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="data-table" id="urgent-table">
+                                <thead>
+                                    <tr>
+                                        <th>Urgency Score</th>
+                                        <th>Channel / Source</th>
+                                        <th>Customer Feedback (PII-Masked)</th>
+                                        <th>Detected Theme</th>
+                                        <th>Sentiment Score</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="urgent-table-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: LIVE NLP CASCADE TESTER -->
+            <section id="tab-live-tester" class="tab-pane">
+                <div class="dashboard-grid-2">
+                    
+                    <!-- Live Input Card -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Interactive NLP Pipeline Sandbox</h3>
+                                <p class="card-desc">Type or paste any customer review to test real-time PII masking, sentiment scoring, and theme detection.</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form id="tester-form">
+                                <div class="form-group">
+                                    <label for="tester-text">Customer Review / Feedback Text:</label>
+                                    <textarea id="tester-text" class="input-textarea" rows="5" placeholder="e.g. Charged twice for my order! When I called support at 9876543210 they refused my refund. Total scam, please fix this bug!"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group flex-1">
+                                        <label for="tester-rating">Star Rating (Optional):</label>
+                                        <select id="tester-rating" class="input-select">
+                                            <option value="">No Rating Provided</option>
+                                            <option value="1">1 Star (Very Poor)</option>
+                                            <option value="2">2 Stars (Poor)</option>
+                                            <option value="3">3 Stars (Average)</option>
+                                            <option value="4">4 Stars (Good)</option>
+                                            <option value="5">5 Stars (Excellent)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group flex-1">
+                                        <label for="tester-source">Source Channel:</label>
+                                        <select id="tester-source" class="input-select">
+                                            <!-- Dynamically populated -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-actions mt-3">
+                                    <button type="submit" class="btn btn-primary">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                        <span>Run Live Analysis</span>
+                                    </button>
+                                    <button type="button" id="btn-load-preset" class="btn btn-secondary">
+                                        <span>Load Sample Review</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Live Inspection Output Card -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>AI Inference Diagnostic Output</h3>
+                                <p class="card-desc">Step-by-step pipeline inspection matching Figure 3 architecture</p>
+                            </div>
+                            <span class="badge badge-accent" id="inference-status">Awaiting Input</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="diagnostic-grid">
+                                
+                                <div class="diag-block">
+                                    <span class="diag-label">Step 3: Cleaned & PII Masked Text</span>
+                                    <div class="diag-val code-block" id="diag-cleaned">Type a review to see live masking...</div>
+                                </div>
+
+                                <div class="diag-row-2">
+                                    <div class="diag-block">
+                                        <span class="diag-label">Step 4-5: Sentiment & Intensity</span>
+                                        <div class="diag-badge-val" id="diag-sentiment">-</div>
+                                    </div>
+                                    <div class="diag-block">
+                                        <span class="diag-label">Score S = P(pos) - P(neg)</span>
+                                        <div class="diag-number" id="diag-score">0.00</div>
+                                    </div>
+                                </div>
+
+                                <div class="diag-row-2">
+                                    <div class="diag-block">
+                                        <span class="diag-label">Model Confidence</span>
+                                        <div class="diag-progress-wrap">
+                                            <div class="diag-prog-bar" id="diag-conf-bar" style="width: 0%;"></div>
+                                        </div>
+                                        <span class="diag-sub-val" id="diag-conf-text">0.0%</span>
+                                    </div>
+                                    <div class="diag-block">
+                                        <span class="diag-label">Step 8: Assigned Theme</span>
+                                        <div class="diag-theme-val" id="diag-theme">-</div>
+                                    </div>
+                                </div>
+
+                                <div class="diag-block">
+                                    <span class="diag-label">Step 9: Urgency Assessment</span>
+                                    <div class="urgency-eval-row">
+                                        <span class="urgency-number" id="diag-urgency">0</span>
+                                        <span class="urgency-scale">/ 100</span>
+                                        <span class="badge" id="diag-urgency-badge">Normal</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 4: INGEST & SOURCES -->
+            <section id="tab-ingest-data" class="tab-pane">
+                <div class="dashboard-grid-2">
+                    
+                    <!-- CSV Bulk Ingestion -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Bulk CSV / Excel File Upload</h3>
+                                <p class="card-desc">Upload batches of reviews with automatic de-duplication and schema mapping</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <form id="csv-upload-form">
+                                <div class="drop-zone" id="csv-drop-zone">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                    <p class="drop-title">Drag & drop your feedback CSV file here</p>
+                                    <p class="drop-sub">Supports columns: text, rating, date, id</p>
+                                    <input type="file" id="csv-file-input" accept=".csv" class="file-hidden">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('csv-file-input').click()">Browse Files</button>
+                                </div>
+                                <div id="selected-file-info" class="file-info-badge hidden"></div>
+                                <div class="form-group mt-3">
+                                    <label for="upload-source-id">Assign to Channel:</label>
+                                    <select id="upload-source-id" class="input-select">
+                                        <!-- Populated dynamically -->
+                                    </select>
+                                </div>
+                                <button type="submit" id="btn-submit-csv" class="btn btn-primary mt-3 w-100" disabled>
+                                    <span>Process & Ingest CSV</span>
+                                </button>
+                            </form>
+                            <div id="upload-result" class="upload-alert hidden mt-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Connectors & Live Sync -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Connected Feedback Channels</h3>
+                                <p class="card-desc">Google Play Store, Google Business, Webhooks and Surveys</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="sources-management-list" id="sources-management-list">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 5: ALERTS & ANOMALIES -->
+            <section id="tab-alerts-tab" class="tab-pane">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Real-Time Alert & Anomaly Engine</h3>
+                            <p class="card-desc">Monitors 28-day statistical rolling baseline for sentiment drops (z > 2.5) & critical keyword surges (Section 7.1 Step 11)</p>
+                        </div>
+                        <div class="alert-actions">
+                            <button id="btn-simulate-alert" class="btn btn-outline btn-sm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                <span>Simulate Spike Anomaly</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="alerts-feed" id="alerts-feed">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: SYSTEM ADMINISTRATION -->
+            <section id="tab-admin-tab" class="tab-pane">
+                <div class="dashboard-grid-2">
+                    
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>User Roles & Access Permissions</h3>
+                                <p class="card-desc">Role-Based Access Control matrix corresponding to Table 2</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="rbac-table-wrap">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Role</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-users-table">
+                                        <!-- Dynamically populated -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>AI Model & Anomaly Configurations</h3>
+                                <p class="card-desc">Hyperparameters matching Section 7.1 algorithm</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="config-list">
+                                <div class="config-row">
+                                    <span class="cfg-name">Positive Sentiment Threshold</span>
+                                    <span class="cfg-val">S ≥ +0.25</span>
+                                </div>
+                                <div class="config-row">
+                                    <span class="cfg-name">Negative Sentiment Threshold</span>
+                                    <span class="cfg-val">S ≤ -0.25</span>
+                                </div>
+                                <div class="config-row">
+                                    <span class="cfg-name">Model Confidence Cutoff</span>
+                                    <span class="cfg-val">Max(P) ≥ 0.60</span>
+                                </div>
+                                <div class="config-row">
+                                    <span class="cfg-name">Anomaly Z-Score Threshold</span>
+                                    <span class="cfg-val">z > 2.50 (99% confidence)</span>
+                                </div>
+                                <div class="config-row">
+                                    <span class="cfg-name">Rolling Baseline Window</span>
+                                    <span class="cfg-val">28 Days</span>
+                                </div>
+                                <div class="config-row">
+                                    <span class="cfg-name">Urgency Cutoff Score</span>
+                                    <span class="cfg-val">S ≤ -0.70 or Keywords</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- App JavaScript -->
+    <script src="/js/app.js"></script>
+</body>
+</html>
