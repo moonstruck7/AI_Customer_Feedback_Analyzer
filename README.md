@@ -100,23 +100,6 @@ d:/fyp project/
 └── requirements.txt           # Project dependencies
 ```
 
----
-
-## 📊 Complete System Diagrams (docs/DIAGRAMS.md)
-All 10 required diagrams from the project specification are drafted in Mermaid:
-- **Fig. 1:** Overall System Architecture
-- **Fig. 2:** Timeline (Gantt) Diagram (16 Weeks)
-- **Fig. 3:** NLP Processing Pipeline (Block Diagram)
-- **Fig. 4:** Entity Relationship (ER) Diagram
-- **Fig. 5:** DFD Level 0 (Context Diagram)
-- **Fig. 6:** DFD Level 1
-- **Fig. 7:** DFD Level 2 (Process 3.0 & Process 5.0)
-- **Fig. 8:** System Flowchart
-- **Fig. 9:** Use Case Diagram
-- **Fig. 10:** Sequence Diagram (Ingestion to Dashboard Render)
-
----
-
 ## 🎓 Academic Submission Details
 - **Subject:** Final Year Project (FYP) / Capstone Project
 - **Branch:** Computer Engineering (Diploma)
