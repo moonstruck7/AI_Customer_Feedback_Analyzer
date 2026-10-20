@@ -26,7 +26,10 @@ def ingest_single(item_in: FeedbackCreate, db: Session = Depends(get_db)):
     )
 
     if is_dup:
-        return {"status": "skipped", "message": "Duplicate feedback detected and discarded.", "feedback_id": item.feedback_id}
+        return {"status": "skipped", "message": "Duplicate feedback detected and discarded.", "feedback_id": item.feedback_id if item else None}
+
+    if not item or not item.sentiment_log:
+        raise HTTPException(status_code=400, detail="Failed to process feedback item")
 
     # Run alert check
     alerts = check_and_generate_alerts(db, [item])

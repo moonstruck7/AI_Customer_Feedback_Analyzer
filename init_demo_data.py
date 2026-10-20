@@ -22,7 +22,8 @@ def initialize():
                 csv_text = f.read()
 
             source = db.query(Source).filter(Source.source_type == "csv").first()
-            source_id = source.source_id if source else 1
+            # pyrefly: ignore[bad-argument-type]
+            source_id = int(source.source_id) if source else 1
             stats = ingest_csv_content(db, source_id, csv_text)
             print(f"Dataset successfully ingested: {stats}")
         else:

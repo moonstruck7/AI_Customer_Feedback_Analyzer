@@ -1,97 +1,98 @@
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, Float, Text, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+from typing import Optional, List
+from sqlalchemy import Integer, String, Float, Text, DateTime, ForeignKey
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.database import Base
 
-def utc_now():
+def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 class User(Base):
     __tablename__ = "users"
 
-    user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String(100), nullable=False)
-    email = Column(String(120), unique=True, index=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
-    role = Column(String(50), nullable=False, default="SMB Owner")  # SMB Owner, Support Manager, System Admin
-    created_at = Column(DateTime, default=utc_now)
+    user_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    email: Mapped[str] = mapped_column(String(120), unique=True, index=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    role: Mapped[str] = mapped_column(String(50), nullable=False, default="SMB Owner")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
-    sources = relationship("Source", back_populates="owner", cascade="all, delete-orphan")
-    alerts = relationship("Alert", back_populates="user", cascade="all, delete-orphan")
+    sources: Mapped[List["Source"]] = relationship("Source", back_populates="owner", cascade="all, delete-orphan")
+    alerts: Mapped[List["Alert"]] = relationship("Alert", back_populates="user", cascade="all, delete-orphan")
 
 class Source(Base):
     __tablename__ = "sources"
 
-    source_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    source_type = Column(String(50), nullable=False)  # google_play, google_business, helpdesk, survey, csv
-    name = Column(String(100), nullable=False)
-    api_config = Column(Text, default="{}")
-    status = Column(String(30), default="active")  # active, paused, error
-    last_synced_at = Column(DateTime, nullable=True)
+    source_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    api_config: Mapped[str] = mapped_column(Text, default="{}")
+    status: Mapped[str] = mapped_column(String(30), default="active")
+    last_synced_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
-    owner = relationship("User", back_populates="sources")
-    feedback_items = relationship("FeedbackItem", back_populates="source", cascade="all, delete-orphan")
-    alerts = relationship("Alert", back_populates="source", cascade="all, delete-orphan")
+    owner: Mapped["User"] = relationship("User", back_populates="sources")
+    feedback_items: Mapped[List["FeedbackItem"]] = relationship("FeedbackItem", back_populates="source", cascade="all, delete-orphan")
+    alerts: Mapped[List["Alert"]] = relationship("Alert", back_populates="source", cascade="all, delete-orphan")
 
 class Theme(Base):
     __tablename__ = "themes"
 
-    theme_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    label = Column(String(100), unique=True, nullable=False)
-    keywords = Column(Text, default="")
-    created_at = Column(DateTime, default=utc_now)
+    theme_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
+    label: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    keywords: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
-    feedback_items = relationship("FeedbackItem", back_populates="theme")
+    feedback_items: Mapped[List["FeedbackItem"]] = relationship("FeedbackItem", back_populates="theme")
 
 class FeedbackItem(Base):
     __tablename__ = "feedback_items"
 
-    feedback_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    source_id = Column(Integer, ForeignKey("sources.source_id"), nullable=False)
-    theme_id = Column(Integer, ForeignKey("themes.theme_id"), nullable=True)
-    external_id = Column(String(128), index=True, nullable=True)  # Hash for deduplication
-    text = Column(Text, nullable=False)
-    cleaned_text = Column(Text, nullable=False)
-    rating = Column(Integer, nullable=True)  # 1 to 5 star rating if available
-    language = Column(String(20), default="en")
-    urgency_score = Column(Float, default=0.0)  # 0 to 100
-    status = Column(String(30), default="new")  # new, in_progress, resolved
-    created_at = Column(DateTime, default=utc_now)
-    ingested_at = Column(DateTime, default=utc_now)
+    feedback_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
+    source_id: Mapped[int] = mapped_column(Integer, ForeignKey("sources.source_id"), nullable=False)
+    theme_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("themes.theme_id"), nullable=True)
+    external_id: Mapped[Optional[str]] = mapped_column(String(128), index=True, nullable=True)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    cleaned_text: Mapped[str] = mapped_column(Text, nullable=False)
+    rating: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    language: Mapped[str] = mapped_column(String(20), default="en")
+    urgency_score: Mapped[float] = mapped_column(Float, default=0.0)
+    status: Mapped[str] = mapped_column(String(30), default="new")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    ingested_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
-    source = relationship("Source", back_populates="feedback_items")
-    theme = relationship("Theme", back_populates="feedback_items")
-    sentiment_log = relationship("SentimentLog", back_populates="feedback_item", uselist=False, cascade="all, delete-orphan")
+    source: Mapped["Source"] = relationship("Source", back_populates="feedback_items")
+    theme: Mapped[Optional["Theme"]] = relationship("Theme", back_populates="feedback_items")
+    sentiment_log: Mapped[Optional["SentimentLog"]] = relationship("SentimentLog", back_populates="feedback_item", uselist=False, cascade="all, delete-orphan")
 
 class SentimentLog(Base):
     __tablename__ = "sentiment_logs"
 
-    log_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    feedback_id = Column(Integer, ForeignKey("feedback_items.feedback_id"), unique=True, nullable=False)
-    label = Column(String(20), nullable=False)  # positive, neutral, negative
-    score = Column(Float, nullable=False)       # -1.0 to +1.0
-    confidence = Column(Float, nullable=False)  # max(p) 0.0 to 1.0
-    p_pos = Column(Float, default=0.0)
-    p_neu = Column(Float, default=0.0)
-    p_neg = Column(Float, default=0.0)
-    model_name = Column(String(100), default="transformer-hybrid-v1")
-    processed_at = Column(DateTime, default=utc_now)
+    log_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
+    feedback_id: Mapped[int] = mapped_column(Integer, ForeignKey("feedback_items.feedback_id"), unique=True, nullable=False)
+    label: Mapped[str] = mapped_column(String(20), nullable=False)
+    score: Mapped[float] = mapped_column(Float, nullable=False)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    p_pos: Mapped[float] = mapped_column(Float, default=0.0)
+    p_neu: Mapped[float] = mapped_column(Float, default=0.0)
+    p_neg: Mapped[float] = mapped_column(Float, default=0.0)
+    model_name: Mapped[str] = mapped_column(String(100), default="transformer-hybrid-v1")
+    processed_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
-    feedback_item = relationship("FeedbackItem", back_populates="sentiment_log")
+    feedback_item: Mapped["FeedbackItem"] = relationship("FeedbackItem", back_populates="sentiment_log")
 
 class Alert(Base):
     __tablename__ = "alerts"
 
-    alert_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    source_id = Column(Integer, ForeignKey("sources.source_id"), nullable=True)
-    alert_type = Column(String(50), nullable=False)  # sentiment_drop, critical_keyword, high_urgency
-    severity = Column(String(20), default="medium")  # low, medium, high, critical
-    message = Column(Text, nullable=False)
-    channel = Column(String(30), default="in_app")  # in_app, email, slack
-    status = Column(String(30), default="active")   # active, acknowledged, resolved
-    triggered_at = Column(DateTime, default=utc_now)
+    alert_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.user_id"), nullable=False)
+    source_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("sources.source_id"), nullable=True)
+    alert_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    severity: Mapped[str] = mapped_column(String(20), default="medium")
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    channel: Mapped[str] = mapped_column(String(30), default="in_app")
+    status: Mapped[str] = mapped_column(String(30), default="active")
+    triggered_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
-    user = relationship("User", back_populates="alerts")
-    source = relationship("Source", back_populates="alerts")
+    user: Mapped["User"] = relationship("User", back_populates="alerts")
+    source: Mapped[Optional["Source"]] = relationship("Source", back_populates="alerts")

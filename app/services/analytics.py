@@ -44,7 +44,8 @@ def get_dashboard_metrics(db: Session, source_id: int | None = None, days: int =
 
     # Average rating (only from items that have a rating)
     rating_items = query.filter(FeedbackItem.rating.isnot(None)).all()
-    avg_rating = round(sum(it.rating for it in rating_items) / len(rating_items), 2) if rating_items else 0.0
+    # pyrefly: ignore[bad-argument-type]
+    avg_rating = round(float(sum(float(it.rating or 0) for it in rating_items)) / len(rating_items), 2) if rating_items else 0.0
 
     # Urgent complaints (urgency_score >= 60.0)
     urgent_count = query.filter(FeedbackItem.urgency_score >= 60.0, FeedbackItem.status != "resolved").count()
@@ -142,7 +143,8 @@ def get_theme_analytics(db: Session) -> list[dict]:
         pos = sum(1 for it, log in items if log.label == "positive")
         neu = sum(1 for it, log in items if log.label == "neutral")
         neg = sum(1 for it, log in items if log.label == "negative")
-        avg_score = sum(log.score for it, log in items) / count
+        # pyrefly: ignore[bad-argument-type]
+        avg_score = float(sum(float(log.score) for it, log in items)) / count
 
         analytics.append({
             "theme_id": th.theme_id,
@@ -152,7 +154,7 @@ def get_theme_analytics(db: Session) -> list[dict]:
             "positive": pos,
             "neutral": neu,
             "negative": neg,
-            "avg_score": round(avg_score, 3)
+            "avg_score": round(float(avg_score), 3)
         })
 
     # Sort descending by total items

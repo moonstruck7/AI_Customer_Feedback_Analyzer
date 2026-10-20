@@ -1,9 +1,15 @@
 import numpy as np
+from typing import TypedDict
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+class ThemeDefinition(TypedDict):
+    label: str
+    keywords: str
+    seeds: list[str]
+
 # Standard recurring themes with representative seed anchors and keywords
-DEFAULT_THEME_DEFINITIONS = [
+DEFAULT_THEME_DEFINITIONS: list[ThemeDefinition] = [
     {
         "label": "App Bugs & Performance",
         "keywords": "crash, bug, slow, lag, update, error, freeze, glitch, battery, battery drain, loading",
